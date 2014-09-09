@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+#script for diffie hellman
 import math
 from random import randint
 #from sys import argv
