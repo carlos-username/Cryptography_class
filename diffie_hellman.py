@@ -2,13 +2,13 @@
 #script for diffie hellman
 import math
 from random import randint
-#from sys import argv
+from sys import argv
 def primo(num):
     if num%2==0:
         return False
-    tope=math.ceil(num)
+    tope=math.ceil(math.sqrt(num))
     div=3
-    while div<tope:
+    while div<=tope:
         if num%div==0:
             return False
         div+=2
