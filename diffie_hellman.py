@@ -2,7 +2,7 @@
 #script for diffie hellman
 import math
 from random import randint
-from sys import argv
+
 def primo(num):
     if num%2==0:
         return False
