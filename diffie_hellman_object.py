@@ -55,11 +55,13 @@ def factors(number):
             lista.append(n)
     return lista
 
+#def gcd(a,b):
+    
 def main():
     while True:
-        p=randint(3,99999)
-        g=randint(3,99999)
-        if primo(p) and primo(g) and test_generator(g,factors(p),p) and g<p:
+        p=randint(13,99999)
+        g=randint(13,99999)
+        if primo(p) and primo(g) and primo((p-1)/2) and primo((g-1)/2) and test_generator(g,factors(p),p) and g<p:
             break
     print "p-> ",p
     print "g-> ",g
