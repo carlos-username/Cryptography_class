@@ -33,7 +33,7 @@ class Diffie_hellman:
 def primo(num):
     if num%2==0:
         return False
-    tope=math.ceil(num)
+    tope=math.ceil(math.sqrt(num))
     div=3
     while div<tope:
         if num%div==0:
