@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 import math
 from random import randint
-#from sys import argv
+
 class Diffie_hellman:
     def __init__(self,p,g,x,y):
         self.mod = p
@@ -55,8 +55,6 @@ def factors(number):
             lista.append(n)
     return lista
 
-#def gcd(a,b):
-    
 def main():
     while True:
         p=randint(13,99999)
