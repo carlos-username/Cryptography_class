@@ -13,7 +13,7 @@ def file_is_empty(path):
 
 def key_files(paths):
     for i in paths:
-        if not os.path.exists(i) and file_is_empty(i):
+        if not os.path.exists(i) or file_is_empty(i):
             return False
     return True
     
@@ -37,7 +37,8 @@ s.connect((ip, PORT))
 paths=[".keys",".keys/id_rsa",".keys/id_rsa.pub"]
 if not key_files(paths):
     print "You have not created your key pairs, they are going to be created ..."
-    os.mkdir( paths[0] )
+    if not os.path.exists(".keys"):
+            os.mkdir( paths[0] )
     try:
         with open(paths[1], 'w') as a, open(paths[2], 'w') as b:
             data=main()
@@ -49,7 +50,7 @@ if not key_files(paths):
     except IOError as e:
         print 'Operation failed: %s' % e.strerror
 
-if not os.path.exists(".keys/known_hosts") and file_is_empty(".keys/known_hosts"):
+if not os.path.exists(".keys/known_hosts") or file_is_empty(".keys/known_hosts"):
     hosts_file=open(".keys/known_hosts","a")
 else:
     hosts_file=open(".keys/known_hosts","r")
@@ -104,18 +105,21 @@ def challenge():
 if not check_ip(ip):
     request=""
     while request != "yes" or request != "no":
-        request = raw_input("The host cannot be authenticated because of first connection, do you still want to connect? (yes/no): ")
+        request = raw_input("The host cannot be authenticated because of first connection, do you want to send your keys? (yes/no): ")
         if request=="yes":
             reply=s.recv(1024)
             if reply:
-                pub_key=json.loads(reply) 
-                hosts_file.write(str(ip)+" "+str(pub_key["e"])+" "+str(pub_key["n"]))
+                pub_key=json.loads(reply)
+                hosts_file=open(".keys/known_hosts","a")
+                hosts_file.write(str(ip)+" "+str(pub_key["e"])+" "+str(pub_key["n"]) + '\n')
                 print pub_key
                 public_key=json.JSONEncoder().encode(read_files(".keys/id_rsa.pub"))
                 s.send(public_key)
-                s.recv(1024)
-                hosts_file.close()
-                client()
+                #s.recv(1024)
+                #hosts_file.close()
+                #client()
+                print "key added to the server as well as server's key, connect again, goodbye..."
+                sys.exit()
                 
         elif request=="no":
             hosts_file.close()
@@ -130,13 +134,16 @@ else:
         public_key=json.JSONEncoder().encode(read_files(".keys/id_rsa.pub"))
         s.send(public_key)
         fx_and_x=s.recv(1024)
-        challenge()
-        if authenticate(fx_and_x,host):
-            print "Server has been authenticated..."
-            hosts_file.close()
-            client()
+        if fx_and_x:
+                challenge()
+                if authenticate(fx_and_x,host):
+                        print "Server has been authenticated..."
+                        hosts_file.close()
+                        client()
+                else:
+                        print "Warning, the server you are about to connect to does not seem to be legit, goodbye..."
+                        sys.exit()
         else:
-            print "Warning, the server you are about to connect to does not seem to be legit, goodbye..."
-            sys.exit()
+                print "your public keys are being sent to server..."
          
 s.close()
